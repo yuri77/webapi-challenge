@@ -37,4 +37,38 @@ router.post("/", (req, res) => {
     });
 });
 
+router.put("/:id", validateId, (req, res) => {
+  console.log(req.params);
+  const { id } = req.params;
+  const { name, description } = req.body;
+  if (!name || !description) {
+    return res.status(400).json({
+      error: "Please provide name and description for the project"
+    });
+  }
+  db.update(id, { name, description })
+    .then(pro => {
+      res.status(201).json(pro);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "project couldn't be updated" });
+    });
+});
+
+//custom middleware
+
+function validateId(req, res, next) {
+  const { id } = req.params;
+  db.get(id).then(pro => {
+    if (pro) {
+      console.log("pro from middle", pro);
+      req.pro = pro;
+      next();
+    } else {
+      res.status(404).json({ error: "project with id does not exist" });
+    }
+  });
+}
+
 module.exports = router;
