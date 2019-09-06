@@ -45,6 +45,23 @@ router.delete("/:id", validateActionId, (req, res) => {
     });
 });
 
+router.put("/:id", validateActionId, (req, res) => {
+  const { id } = req.act;
+  const { project_id, description, notes } = req.body;
+  if (!project_id || !description || !notes) {
+    res.status(400).json({ error: "missing required field" });
+  }
+  action
+    .update(id, req.body)
+    .then(act => {
+      res.status(201).json(act);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ err: "action could not be updated" });
+    });
+});
+
 //custom middleware
 
 function validateId(req, res, next) {
