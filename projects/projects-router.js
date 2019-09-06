@@ -38,8 +38,7 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", validateId, (req, res) => {
-  console.log(req.params);
-  const { id } = req.params;
+  const { id } = req.pro;
   const { name, description } = req.body;
   if (!name || !description) {
     return res.status(400).json({
@@ -56,13 +55,24 @@ router.put("/:id", validateId, (req, res) => {
     });
 });
 
+router.delete("/:id", validateId, (req, res) => {
+  const { id } = req.pro;
+
+  db.remove(id)
+    .then(del => res.status(204).end())
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "error deleting project" });
+    });
+});
+
 //custom middleware
 
 function validateId(req, res, next) {
   const { id } = req.params;
   db.get(id).then(pro => {
     if (pro) {
-      console.log("pro from middle", pro);
+      //console.log("pro from middle", pro);
       req.pro = pro;
       next();
     } else {
