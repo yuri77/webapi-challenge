@@ -2,6 +2,8 @@ const router = require("express").Router();
 action = require("../data/helpers/actionModel.js");
 project = require("../data/helpers/projectModel.js");
 
+router.use(require("express").json());
+
 router.get("/:id", validateId, (req, res) => {
   const { id } = req.pro;
   project
@@ -13,7 +15,23 @@ router.get("/:id", validateId, (req, res) => {
     });
 });
 
-router.post("/:id");
+router.post("/:id", validateId, (req, res) => {
+  const { id } = req.pro;
+  const { description, notes } = req.body;
+  req.body.project_id = id;
+  if (!description || !notes) {
+    res.status(400).json({ error: "missing required field" });
+  }
+  action
+    .insert(req.body)
+    .then(action => {
+      res.status(201).json(action);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ err: "err posting to the database" });
+    });
+});
 
 //custom middleware
 
