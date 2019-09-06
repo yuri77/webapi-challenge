@@ -18,6 +18,17 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/:id/action", validateId, (req, res) => {
+  const { id } = req.pro;
+  project
+    .getProjectActions(id)
+    .then(actions => res.status(200).json(actions))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "action data cannot be retrieved" });
+    });
+});
+
 router.post("/", (req, res) => {
   const { name, description } = req.body;
   if (!name || !description) {
